@@ -2,3 +2,4 @@ Pillow
 numpy
 torch
 torchvision
+opencv-python

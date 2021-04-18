@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
+from random import random
 
 def font2img(char, image_size, font_file):
     image = Image.new('1', (image_size, image_size), 1) # default color: white
@@ -10,8 +11,11 @@ def font2img(char, image_size, font_file):
     x = (image_size - font_width)/2
     y = (image_size - font_height)/2
     draw.text((x, y), char, 0, font=font) # font color: black
-    #image.save('sample.png')
     # TODO: add tweaks and noises on the image
+    m1 = (random()-0.5)*2*0.3
+    m2 = (random()-0.5)*2*0.3
+    image = image.transform(image.size, Image.AFFINE, (1, m1, 0, m2, 1, 0), Image.BICUBIC)
+    #image.save('sample.png')
     return image
 
 class FontDataset(Dataset):

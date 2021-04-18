@@ -17,13 +17,9 @@ model = Net(image_size, len(charset)).to(device)
 model.load_state_dict(torch.load('./model.pth'))
 
 def evaluate(image):
-    toTensor = transforms.Compose([\
-            transforms.ToTensor()])
-    image = toTensor(image)
-    image = image.unsqueeze(0) # add batch dimension
     image = image.to(device)
     output = model(image)
-    return charset[output.argmax()]
+    return [charset[i.argmax()] for i in output]
 
 if __name__ == '__main__':
     dataset = FontDataset(charset, dataset_size, image_size, font_file)
