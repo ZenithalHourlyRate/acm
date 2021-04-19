@@ -35,10 +35,10 @@ def sdf_print(sdf_arr):
 
 block_w = 20
 block_h = 40
-block_w_num = 36
-block_h_num = 13
+block_w_num = 64
+block_h_num = 18
 font_file = 'mono.otf'
-charset = ' .-*+=#/~[]^|":'
+charset = ' .\'`^_-~:+/\\|[]#'
 charset_img = {
     ch: font2img(ch, block_w, block_h, font_file)
     for ch in charset
@@ -63,7 +63,7 @@ def gen_art(img):
     ]
 
 def img2ascii(num):
-    with Image.open(f'img/ba_{num:04d}.png', 'r') as f:
+    with Image.open(f'/tmp/mope/{num:04d}.png', 'r') as f:
         f = f.convert("L")
         f = f.resize((block_w*block_w_num, block_h*block_h_num))
         img = numpy.array(f)
@@ -83,7 +83,7 @@ def img2ascii(num):
             #print(col, end='')
         #print('')
 
-    out.save(f'output/ba_{num:04d}.png')
+    out.save(f'/tmp/mope/output/{num:04d}.png')
 
 
 if __name__ == '__main__':
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('-n', dest='job', type=int, help='the num of job for this program')
     args = parser.parse_args()
 
-    total_frame = 6574
+    total_frame = 3347
     for num in range(1, total_frame+1):
         if args.job != None and args.jobs != None and num % args.jobs != args.job:
             continue
