@@ -9,7 +9,7 @@ fi
 
 TMPDIR=$(mktemp -d) || exit 1
 
-ffmpeg -i $2 $TMPDIR/audio.aac
-ffmpeg -i $1 -i $TMPDIR/audio.aac $3
+ffmpeg -i $1 $TMPDIR/audio.aac
+ffmpeg -i $2 -i $TMPDIR/audio.aac $3
 
 rm -r $TMPDIR
