@@ -63,6 +63,6 @@ to play it. (Or you may just use `examples/ba_telnet.txt` in `acm` repo)
 
 ![](examples/yoru.gif)
 
-### もべもべ
+### もぺもぺ
 
 ![](examples/mope.gif)
