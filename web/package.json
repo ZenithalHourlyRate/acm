@@ -36,8 +36,8 @@
   "scripts": {
     "debug_build": "parcel build index.html",
     "build": "parcel build --no-source-maps index.html",
+    "postbuild": "cp -r CNAME dist && ln -sf ./index.html dist/404.html",
     "start": "parcel index.html",
-    "half_start": "(yarn debug_build && yarn postbuild && cd dist && python3 ../scripts/gh-cors.py 1234)",
-    "full_start": "(yarn debug_build && yarn legacy_build && yarn postbuild && cd dist && python3 ../scripts/gh-cors.py)"
+    "full_start": "(yarn debug_build && yarn postbuild && cd dist && python3 ../scripts/gh-cors.py 1234)"
   }
 }
