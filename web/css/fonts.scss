@@ -1,0 +1,15 @@
+@mixin sans {
+  font-family: 'Source Sans Pro', 'Noto Sans SC', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'PingFang SC',
+    'Microsoft YaHei', /* Good luck Linux users */ sans-serif;
+}
+
+@mixin serif {
+  font-family: 'Source Serif Pro', 'Noto Serif SC', serif;
+}
+
+@mixin monospace {
+  font-family: 'Source Code Pro', source-code-pro, Menlo, Monaco, Consolas,
+    'Courier New', monospace;
+}

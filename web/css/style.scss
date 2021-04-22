@@ -1,0 +1,37 @@
+@import "./fonts.scss";
+
+:root {
+  color-scheme: light dark;
+}
+
+html, body, #app, .tool, .display {
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  @include monospace;
+}
+
+.display {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.src-img, .dst-acm {
+  flex: 0 1 40%; // FIXME: low resolution screen and HiDPI consideration
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.src-img img, .dst-acm pre {
+  width: 100%;
+  flex: 0 1 auto;
+}
