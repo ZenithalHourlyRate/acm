@@ -112,10 +112,10 @@ export default React.memo(() => {
   }, [ctx, imgHeight, imgWidth]);
 
   useEffect(() => {
-    if (charSdf.length != sdfCharset.length) {
-      return;
-    } // do not render when charSdf is not ready
-    acm.forEach((l, j) => l.forEach((c, i) => sdfRender(i, j).then((m) => {
+    //if (charSdf.length != sdfCharset.length) {
+    //  return;
+    //} // do not render when charSdf is not ready
+    acm.forEach((l, j) => l.forEach((c, i) => grayRender(i, j).then((m) => {
       acm[j][i] = m; setRenderNum((n) => n+1);
     })));
   }, [acm, charSdf]);
