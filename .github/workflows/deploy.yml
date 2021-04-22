@@ -17,12 +17,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - name: Change working dir
-        run: cd web
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: cd web && yarn --frozen-lockfile
       - name: Build
-        run: yarn build
+        run: cd web && yarn build
       - name: Commit and publish
         if: ${{ github.ref == 'refs/heads/master' }}
         env: 
@@ -33,7 +31,7 @@ jobs:
           remote_repo="https://x-access-token:${ACCESS_TOKEN}@github.com/${PUBLISH_REPOSITORY}.git"
           remote_branch="master"
           git_commit_id=$(git rev-parse --short HEAD)
-          mkdir _site_remote && cd _site_remote
+          cd web && mkdir _site_remote && cd _site_remote
           git init
           git config user.name "${ACTOR}"
           git config user.email "${ACTOR}@users.noreply.github.com"
