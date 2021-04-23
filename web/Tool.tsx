@@ -21,8 +21,8 @@ const font2img = async (char: string, charHeight: number) => {
   ctx.fillRect(0, 0, charWidth, charHeight);
   ctx.fillStyle = '#000000';
   ctx.font = charHeight.toString()+'px monospace';
-  ctx.fillText(char, 0, charHeight-5); // left bottom corner
-  // dirty -5 here, otherwise truncated
+  ctx.textBaseline = "top"; // change baseline property
+  ctx.fillText(char, 0, 0); // left bottom corner
   // use the following appendChild to preview
   // document.body.appendChild(canvas);
   return ctx.getImageData(0, 0, charWidth, charHeight);
