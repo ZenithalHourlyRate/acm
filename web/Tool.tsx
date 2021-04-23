@@ -4,8 +4,6 @@ import ndarray from 'ndarray';
 
 import defaultImg from 'url:./dram.png';
 
-const charWidth = 10; // pixel
-const charHeight = 20; // pixel
 const grayCharset = ' .-~^*=#';
 const sdfCharset = ' .\'`^_-~:+/\\|[]#';
 
@@ -13,7 +11,8 @@ const sleep = async (ms) => {
   await new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-const font2img = async (char: string) => {
+const font2img = async (char: string, charHeight: number) => {
+  const charWidth = Math.round(charHeight/2);
   const canvas = document.createElement('CANVAS');
   canvas.height = charHeight;
   canvas.width = charWidth;
@@ -29,7 +28,8 @@ const font2img = async (char: string) => {
   return ctx.getImageData(0, 0, charWidth, charHeight);
 };
 
-const img2sdf = async (data: ImageData) => {
+const img2sdf = async (data: ImageData, charHeight: number) => {
+  const charWidth = Math.round(charHeight/2);
   const gray = data.data.reduce((r, c, i, a) => {
     if (i % 4 == 0) r.push(((a[i]+a[i+1]+a[i+2])/3 < 127 ? 1 : 0)); return r;
   }, []); // why less than? different lib has different def
@@ -53,9 +53,25 @@ const img2sdf = async (data: ImageData) => {
 
 export default React.memo(() => {
   const [charSdf, setCharSdf] = useState<(string | number)[][]>([]);
+
+  const [charHeight, setCharHeight] = useState<number>(20); // pixel
+  // we assume charWidth = charHeight/2
+  const handleCharHeightPlus = (e) => {
+    if (charHeight < 40) {
+      setCharHeight(h => h+1);
+      setCharSdf([]);
+    }
+  };
+  const handleCharHeightMinus = (e) => {
+    if (charHeight > 10) {
+      setCharHeight(h => h-1);
+      setCharSdf([]);
+    }
+  };
+
   useEffect(() =>
-    Array.from(sdfCharset).map((c) => font2img(c).then((m) => img2sdf(m).then((m) => setCharSdf((sdf) => [...sdf, [c, m]]) )))
-  , []);
+    Array.from(sdfCharset).map((c) => font2img(c, charHeight).then((m) => img2sdf(m, charHeight).then((m) => setCharSdf((sdf) => [...sdf, [c, m]]) )))
+  , [charHeight]);
 
   const [imgUrl, setImgUrl] = useState<string>(defaultImg);
   const handleUpload = (e) => setImgUrl(URL.createObjectURL(e.target.files[0]));
@@ -85,6 +101,7 @@ export default React.memo(() => {
   const grayRender = async (i, j) => {
     // sleep for some random time
     await sleep(100*Math.random());
+    const charWidth = Math.round(charHeight/2);
     const data = ctx.getImageData(charWidth*i, charHeight*j, charWidth, charHeight).data;
     const gray = data.reduce((r, c, i, a) => {
       if (i % 4 == 0) r.push((a[i]+a[i+1]+a[i+2])/3); return r;
@@ -96,40 +113,65 @@ export default React.memo(() => {
   const sdfRender = async (i, j) => {
     // sleep for some random time
     await sleep(100*Math.random());
+    const charWidth = Math.round(charHeight/2);
     const imageData = ctx.getImageData(charWidth*i, charHeight*j, charWidth, charHeight);
-    const sdf = await img2sdf(imageData);
+    const sdf = await img2sdf(imageData, charHeight);
     return charSdf.map(([k, v]) => [k, v.map((w, i) => Math.floor(Math.abs(w - sdf[i]))).reduce((r, c) => r + c, 0)])
         .reduce((r, c) => r[0] ? (r[1] > c[1] ? c : r) : c, ['', 0])[0];
   };
+  const renderFuncs = [["sdf", sdfRender], ["gray", grayRender]];
+  const [renderFunc, setRenderFunc] = useState<number>(0);
+  const iterateRenderFunc = (e) => {setRenderFunc(r => ((r + 1) % renderFuncs.length))};
 
   const [acm, setAcm] = useState<string[][]>([[]]);
   useEffect(() => {
     if (!ctx || imgHeight == 0 || imgWidth == 0) {
       return;
     }
-    setAcm(Array.from(Array(Math.floor(imgHeight/charHeight)),
-        () => Array(Math.floor(imgWidth/charWidth)).fill('#')));
-  }, [ctx, imgHeight, imgWidth]);
+    const charWidth = Math.round(charHeight/2);
+    const acmHeight = Math.floor(imgHeight/charHeight);
+    const acmWidth = Math.floor(imgWidth/charWidth);
+    const defaultAcm = Array.from(Array(acmHeight), () => Array(acmWidth).fill('#'));
+    // now copy contents of old acm
+    acm.forEach((l, j) => l.forEach((c, i) => {if (j < acmHeight && i < acmWidth) defaultAcm[j][i] = c}));
+    setAcm(defaultAcm);
+  }, [ctx, imgHeight, imgWidth, charHeight]);
 
   useEffect(() => {
     if (charSdf.length != sdfCharset.length) {
       return;
     } // do not render when charSdf is not ready
-    acm.forEach((l, j) => l.forEach((c, i) => sdfRender(i, j).then((m) => {
+    acm.forEach((l, j) => l.forEach((c, i) => renderFuncs[renderFunc][1](i, j).then((m) => {
       acm[j][i] = m; setRenderNum((n) => n+1);
     })));
-  }, [acm, charSdf]);
+  }, [acm, charSdf, renderFunc]);
 
   return (
     <div className="tool">
-      <input type="file" accept="image/*" onChange={handleUpload} />
-      <div>Rendered: {renderNum}</div>
+      <h2>Input Image</h2>
+      <div className="content">
+        <label htmlFor="imgfile" className="img-input-label" >{imgUrl}</label>
+        <input id="imgfile" type="file" accept="image/*" onChange={handleUpload} className="img-input" />
+      </div>
+      <h2>Font Size</h2>
+      <div className="content">
+        <span>{charHeight}</span>
+        <span className="button" onClick={handleCharHeightPlus}>+</span>
+        <span className="button" onClick={handleCharHeightMinus}>-</span>
+      </div>
+      <h2>Render Method</h2>
+      <div className="content">
+        <span>{renderFuncs[renderFunc][0]}</span>
+        <span className="button" onClick={iterateRenderFunc}>+</span>
+      </div>
+      <h2>Rendered</h2>
+      <div className="content">{renderNum}</div>
       <div className="display">
-        <div className="src-img">
-          <img src={imgUrl} />
-        </div>
         <div className="dst-acm">
           <pre>{ acm.map((l) => l.join('')).join('\n') }</pre>
+        </div>
+        <div className="src-img">
+          <img src={imgUrl} />
         </div>
       </div>
     </div>
