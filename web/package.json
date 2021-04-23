@@ -34,8 +34,8 @@
     "react-router-dom": "^5.2.0"
   },
   "scripts": {
-    "debug_build": "parcel build index.html",
-    "build": "parcel build --no-source-maps index.html",
+    "debug_build": "parcel build index.html --no-optimize",
+    "build": "parcel build --no-source-maps index.html --no-optimize",
     "postbuild": "cp -r CNAME dist && ln -sf ./index.html dist/404.html",
     "start": "parcel index.html",
     "full_start": "(yarn debug_build && yarn postbuild && cd dist && python3 ../scripts/gh-cors.py 1234)"
