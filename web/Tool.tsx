@@ -4,7 +4,7 @@ import ndarray from 'ndarray';
 
 import defaultImg from 'url:./dram.png';
 
-const grayCharset = ' .-~^*=#';
+const grayCharset = ' .\'^-~*+=#';
 const sdfCharset = ' .\'`^_-~:+/\\|[]#';
 
 const sleep = async (ms) => {
