@@ -30,8 +30,8 @@ def to_sdf(arr):
     sdf_arr_neg = cv2.distanceTransform(1 - arr, cv2.CV_32F, 0)
     return norm_array(sdf_arr + sdf_arr_neg, arr)
 
-block_w = 20
-block_h = 40
+block_w = 12
+block_h = 20
 block_w_num = 64
 block_h_num = 18
 font_file = 'mono.otf'
@@ -85,16 +85,23 @@ if __name__ == '__main__':
     parser.add_argument('-n', dest='job', type=int, help='the num of job for this program (start from 1)', required=True)
     parser.add_argument('-i', dest='input', type=str, help='input imgs', required=True)
     parser.add_argument('-o', dest='output', type=str, help='output files', required=True)
-    parser.add_argument('-s', dest='size', type=str, help='size', default='40x12')
+    parser.add_argument('-s', dest='size', type=str, help='number of char block', default='40x12')
+    parser.add_argument('-b', dest='block', type=str, help='size of a char block', default='20x12')
+    parser.add_argument('-f', dest='font', type=str, help='font file', default='mono.otf')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-a', action='store_true', help='output Ascii Movie in txt format')
     group.add_argument('-g', action='store_true', help='output Ascii Movie in image format')
     args = parser.parse_args()
 
+    # change global state
     if args.size:
-        # change global state
         block_w_num, block_h_num = args.size.split('x')
         block_w_num, block_h_num = int(block_w_num), int(block_h_num)
+    if args.block:
+        block_w, block_h = args.block.split('x')
+        block_w, block_h = int(block_w), int(block_h)
+    if args.font:
+        font_file = args.font
 
     count = 1 # assumption made by ffmpeg
     from os.path import isfile
