@@ -211,8 +211,8 @@ if __name__ == '__main__':
             f = f.convert("L")
             f = f.resize((block_w*block_w_num, block_h*block_h_num))
             f = f.filter(ImageFilter.CONTOUR)
-            img = numpy.array(f)
-        img = (img[:,:] > 128).astype(numpy.uint8) # L to 1
+            img = np.array(f)
+        img = (img[:,:] > 128).astype(np.uint8) # L to 1
 
         acm = img2acm(img)
         if args.a:
